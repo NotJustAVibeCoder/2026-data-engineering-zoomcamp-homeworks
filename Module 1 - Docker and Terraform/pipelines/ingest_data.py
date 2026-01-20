@@ -37,28 +37,33 @@ parse_dates = [
 ]
 
 
+def run():
 
-df_iter = pd.read_csv(
-    prefix + 'yellow_tripdata_2021-01.csv.gz',
-    dtype=dtype,
-    parse_dates=parse_dates,
-    iterator=True,
+
+    pg_user = 'root'
+    pg_pass = 'root'
+    pg_host = 'localhost'
+    pg_port = '5432'
+    pg_db = "ny_taxi"
+
+    table_name = 'yellow_taxi_data'
+
+    engine = create_engine(f'postgresql://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}')
+
     chunksize=100000
-)
 
+    df_iter = pd.read_csv(
+        prefix + 'yellow_tripdata_2021-01.csv.gz',
+        dtype=dtype,
+        parse_dates=parse_dates,
+        iterator=True,
+        chunksize=chunksize 
+    )
 
+    for df_chunk in tqdm(df_iter):
+        df_chunk.to_sql(name=table_name, con=engine, if_exists='append')
+        print(len(df_chunk))
 
-pg_user = 'root'
-pg_pass = 'root'
-pg_host = 'localhost'
-pg_port = '5432'
-pg_db = "ny_taxi"
-
-
-engine = create_engine(f'postgresql://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}')
-
-
-for df_chunk in tqdm(df_iter):
-    df_chunk.to_sql(name='yellow_taxi_data', con=engine, if_exists='replace')
-    print(len(df_chunk))
-
+if __name__ == 'main':
+    run()
+    
