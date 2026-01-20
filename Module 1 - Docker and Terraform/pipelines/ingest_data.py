@@ -60,9 +60,15 @@ def run():
         chunksize=chunksize 
     )
 
+    first = True
     for df_chunk in tqdm(df_iter):
-        df_chunk.to_sql(name=table_name, con=engine, if_exists='append')
-        print(len(df_chunk))
+        if first:
+            df_chunk.to_sql(name=table_name, con=engine, if_exists='replace')
+            print(len(df_chunk))
+        else:
+            df_chunk.to_sql(name=table_name, con=engine, if_exists='append')
+            print(len(df_chunk))
+        first = False
 
 if __name__ == 'main':
     run()
