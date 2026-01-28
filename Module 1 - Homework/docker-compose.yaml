@@ -1,5 +1,5 @@
 services:
-  db:
+  pgdatabase:
     container_name: postgres
     image: postgres:17-alpine
     environment:
@@ -22,8 +22,20 @@ services:
     volumes:
       - vol-pgadmin_data:/var/lib/pgadmin
 
+  data_ingest:
+    image: data_ingest:v0.1
+    container_name: data_ingest
+    command:
+      - --pg-user=root
+      - --pg-pass=root
+      - --pg-host=pgdatabase
+      - --pg-port=5432
+      - --pg-db=ny_taxi
+      - --table-name=yellow_taxi_trips
+    depends_on:
+      pgdatabase:
+        condition: service_healthy
+
 volumes:
-  vol-pgdata:
-    name: vol-pgdata
-  vol-pgadmin_data:
-    name: vol-pgadmin_data
+  ny_taxi_postgres_data:
+  pgadmin_data:
