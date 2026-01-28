@@ -1,4 +1,4 @@
-# 🚕 NYC Taxi Data Ingestion Pipeline
+# 🚕 Homework 1 - NYC Taxi Data Ingestion Pipeline
 
 **A containerized data ingestion project using Docker, PostgreSQL, and Python**
 
@@ -13,11 +13,11 @@
 ## Table of Contents
 
 - [Solution](#solution)
-    - [Homework Answers](#homework-answers)
+  - [Homework Answers](#homework-answers)
 - [Project Description](#project-description)
-    - [Project Overview](#project-overview)
-    - [Technology Stack](#-technology-stack)
-    - [Main Components](#-main-components)
+  - [Project Overview](#project-overview)
+  - [Technology Stack](#-technology-stack)
+  - [Main Components](#-main-components)
 
 ---
 
