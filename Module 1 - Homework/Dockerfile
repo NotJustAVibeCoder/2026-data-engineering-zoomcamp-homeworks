@@ -10,8 +10,15 @@ WORKDIR /code
 # Add virtual environment to PATH so we can use installed packages
 ENV PATH="/app/.venv/bin:$PATH"
 
+# Install build dependencies for psycopg2
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copying environment files
 COPY pyproject.toml uv.lock .python-version ./
+
 
 # Install packages from the uv config files
 RUN uv sync --locked
@@ -23,4 +30,4 @@ RUN uv sync --locked
 COPY ingest_data.py .
 
 # Setting entrypoint to be our script (it will execute when the we run the image)
-ENTRYPOINT [ "uv", "run", "python", "ingest_data.py" ]
+ENTRYPOINT [ "uv", "run", "ingest_data.py" ]
