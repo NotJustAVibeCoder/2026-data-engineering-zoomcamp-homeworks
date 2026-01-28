@@ -51,3 +51,4 @@ def run(pg_user, pg_pass, pg_host, pg_port, pg_db, zones_table_name, data_table_
 
 if __name__ == '__main__':
     run()
+    

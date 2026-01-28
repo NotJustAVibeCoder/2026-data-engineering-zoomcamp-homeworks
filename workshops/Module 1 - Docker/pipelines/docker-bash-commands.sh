@@ -30,3 +30,12 @@ docker run -it \
   --pg-port=5432 \
   --pg-db=ny_taxi \
   --table-name=yellow_taxi_trips
+
+
+  uv run python ingest_data.py --pg-user=root \
+      --pg-pass=root \
+      --pg-host=localhost \
+      --pg-port=5433 \
+      --pg-db=ny_taxi \
+      --data-table-name=yellow_taxi_trips \
+      --zones-table-name=taxi_zones \
