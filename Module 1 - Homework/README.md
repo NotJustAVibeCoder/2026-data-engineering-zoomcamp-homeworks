@@ -10,18 +10,14 @@
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 
-- [Quick Start](#-quick-start)
 - [Solution](#solution)
-- [Project Architecture](#-project-architecture)
-  - [Project Overview](#project-overview)
-  - [Technology Stack](#-technology-stack)
-  - [Main Components](#-main-components)
-- [Implementation Details](#-implementation-details)
-  - [Data Ingestion](#data-ingestion-details)
-  - [File Structure](#main-files--directories)
-  - [Dependencies](#dependencies)
+    - [Homework Answers](#homework-answers)
+- [Project Description](#project-description)
+    - [Project Overview](#project-overview)
+    - [Technology Stack](#-technology-stack)
+    - [Main Components](#-main-components)
 
 ---
 
