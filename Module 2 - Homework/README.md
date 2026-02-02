@@ -1,4 +1,4 @@
-# � Kestra Workflow Orchestration - NYC Taxi Data Pipeline
+# Kestra Workflow Orchestration - NYC Taxi Data Pipeline
 
 **Build and orchestrate data workflows using Kestra with PostgreSQL**
 
@@ -12,16 +12,64 @@
 
 ## Table of Contents
 
-- [Quick Start](#-quick-start)
-- [Project Overview](#-project-overview)
-- [Architecture](#-architecture)
-  - [Services](#services)
-  - [Technology Stack](#-technology-stack)
-- [Key Features](#-key-features)
+- [Homework Questions & Answers](#homework-questions--answers)
+- [Project Overview](#project-overview)
+  - [Quick Start](#-quick-start)
+  - [Architecture](#-architecture)
+  - [Key Features](#-key-features)
+  - [Learning Outcomes](#-learning-outcomes)
 
 ---
 
-## 🚀 Quick Start
+## ❓ Homework Questions & Answers
+
+1. Within the execution for Yellow Taxi data for the year 2020 and month 12: what is the uncompressed file size (i.e. the output file yellow_tripdata_2020-12.csv of the extract task)?
+
+_Solution:_
+
+One of the ways to check the output file size is to run the following command in the Google Cloud Shell:
+
+```shell
+gcloud storage ls gs://bucket-kestra_090122312/yellow_tripdata_2020-12.csv --long
+```
+
+_Answer:_ 128.3 MiB
+
+2. What is the rendered value of the variable file when the inputs taxi is set to green, year is set to 2020, and month is set to 04 during execution?
+
+{{inputs.taxi}}_tripdata_{{inputs.year}}-{{inputs.month}}.csv
+green_tripdata_2020-04.csv
+green_tripdata_04_2020.csv
+green_tripdata_2020.csv
+
+3. How many rows are there for the Yellow Taxi data for all CSV files in the year 2020?
+
+13,537.299
+24,648,499
+18,324,219
+29,430,127
+
+4. How many rows are there for the Green Taxi data for all CSV files in the year 2020?
+
+5,327,301
+936,199
+1,734,051
+1,342,034
+
+5. How many rows are there for the Yellow Taxi data for the March 2021 CSV file?
+   1,428,092
+   706,911
+   1,925,152
+   2,561,031
+
+6. How would you configure the timezone to New York in a Schedule trigger?
+
+Add a timezone property set to EST in the Schedule trigger configuration
+Add a timezone property set to America/New_York in the Schedule trigger configuration
+Add a timezone property set to UTC-5 in the Schedule trigger configuration
+Add a location property set to New_York in the Schedule trigger configuration
+
+## Project Overview
 
 ### Prerequisites
 
@@ -84,7 +132,49 @@ This module introduces **Kestra**, a modern workflow orchestration platform for 
 
 ---
 
-## 🎯 Architecture
+### 🚀 Quick Start
+
+#### Prerequisites
+
+- Docker and Docker Compose installed
+- 2GB+ free disk space
+
+#### Setup & Run
+
+```bash
+# Start all services
+docker compose up -d
+
+# Access Kestra UI
+open http://localhost:8080
+
+# Access pgAdmin
+open http://localhost:8083
+```
+
+#### Service Endpoints
+
+| Service         | URL                     | Credentials                                   |
+| --------------- | ----------------------- | --------------------------------------------- |
+| **Kestra**      | `http://localhost:8080` | Email: `admin@kestra.io` / Pass: `Admin1234!` |
+| **pgAdmin**     | `http://localhost:8083` | Email: `admin@admin.com` / Pass: `root`       |
+| **NYC Taxi DB** | `localhost:5422`        | User: `root` / Pass: `root`                   |
+| **Kestra DB**   | `localhost:5431`        | User: `kestra` / Pass: `k3str4`               |
+
+#### Connect to PostgreSQL via pgAdmin
+
+In pgAdmin, add a new server:
+
+- **Name:** `ny_taxi` (or your choice)
+- **Host:** `pgdatabase` (Docker container name)
+- **Port:** `5432` (internal container port)
+- **Username:** `root`
+- **Password:** `root`
+- **Database:** `ny_taxi`
+
+---
+
+### 🎯 Architecture
 
 ### Services
 
@@ -126,7 +216,7 @@ This module introduces **Kestra**, a modern workflow orchestration platform for 
 
 ---
 
-## ✨ Key Features
+### ✨ Key Features
 
 ### Workflow Orchestration
 
@@ -164,7 +254,7 @@ tasks:
 
 ---
 
-## 🎓 Learning Outcomes
+### 🎓 Learning Outcomes
 
 This module demonstrates:
 
@@ -187,248 +277,3 @@ This module demonstrates:
 - Error handling and retries
 - Data validation and quality checks
 - Logging and observability
-
----
-
-## 📂 Project Files
-
-- **`docker-compose.yaml`** - Service configuration (Kestra, PostgreSQL databases, pgAdmin)
-- **`pyproject.toml`** - Python dependencies
-- **`ingest_data.py`** - Python script for data ingestion (used by Kestra tasks)
-- **`queries.sql`** - SQL queries for analysis
-- **`taxi_zone_lookup.csv`** - Reference data
-
----
-
-## 🔌 Workflow Execution
-
-### Trigger Workflows
-
-1. **In Kestra UI** (`http://localhost:8080`):
-   - Navigate to Flows section
-   - Create new flow or import existing
-   - Click "Execute" to run
-
-2. **Via API**:
-
-```bash
-curl -X POST http://localhost:8080/api/v1/executions \
-  -H "Content-Type: application/json" \
-  -d '{"flowId":"my_flow", "namespace":"default"}'
-```
-
-3. **Scheduled**:
-   - Define triggers in workflow YAML
-   - Kestra scheduler automatically executes
-
-### Monitor Execution
-
-- View real-time progress in UI
-- Track task execution times
-- Access logs for each step
-- Download execution results
-
----
-
-## 🚀 Next Steps
-
-- Create custom workflows for taxi data processing
-- Integrate with external APIs
-- Add data validation and quality checks
-- Set up monitoring and alerting
-- Deploy to production environment
-
----
-
-## 📚 Resources
-
-- [Kestra Documentation](https://kestra.io/docs/)
-- [Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp)
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
-- [Docker Compose Guide](https://docs.docker.com/compose/)
-
----
-
-<div align="center">
-
-**Built with ❤️ for workflow orchestration learning**
-
-[⬆ Back to Top](#-kestra-workflow-orchestration---nyc-taxi-data-pipeline)
-
-</div>
-
----
-
-## Solution
-
-### Homework Answers
-
-This section contains the solutions to the Data Engineering Zoomcamp Module 1 homework questions.
-
-### Question 1 - Pip Version
-
-**Task:** What's the version of pip in the python:3.13 image?
-
-```bash
-docker run -it --entrypoint=bash python:3.13
-pip -V
-```
-
-**Answer:** `25.3`
-
----
-
-### Question 2 - pgAdmin Connection
-
-**Task:** Given the docker-compose.yaml, what hostname and port should pgAdmin use to connect to the postgres database?
-
-**Answer:**
-
-- **Container name:** `postgres:5432`
-- **Service name:** `db:5432`
-
-Both are correct as Docker creates internal DNS entries for both container names and service names.
-
----
-
-### Question 3 - Trips ≤ 1 Mile in November 2025
-
-**Task:** For trips in November 2025 (lpep_pickup_datetime between '2025-11-01' and '2025-12-01'), how many trips had a trip_distance of ≤ 1 mile?
-
-```sql
-SELECT COUNT(*) AS count_trips
-FROM public.yellow_taxi_trips
-WHERE lpep_pickup_datetime BETWEEN '2025-11-01' AND '2025-12-01'
-  AND trip_distance <= 1;
-```
-
-**Answer:** `8,007 trips`
-
----
-
-### Question 4 - Pickup Day with Longest Trip Distance
-
-**Task:** Which was the pick up day with the longest trip distance? (Exclude trips > 100 miles)
-
-```sql
-SELECT DATE(lpep_pickup_datetime) AS pickup_day
-FROM public.yellow_taxi_trips
-WHERE trip_distance < 100
-ORDER BY trip_distance DESC
-LIMIT 1;
-```
-
-**Answer:** `2025-11-14`
-
----
-
-### Question 5 - Pickup Zone with Most Trips on November 18
-
-**Task:** Which pickup zone had the most trips on November 18th, 2025?
-
-```sql
-SELECT
-    tz."Zone" AS pickup_zone,
-    COUNT(*) AS trip_count
-FROM public.yellow_taxi_trips tt
-JOIN public.taxi_zones tz
-    ON tz."LocationID" = tt."PULocationID"
-WHERE DATE(tt.lpep_pickup_datetime) = '2025-11-18'
-GROUP BY tz."Zone"
-ORDER BY trip_count DESC
-LIMIT 1;
-```
-
-**Answer:** `East Harlem North`
-
----
-
-### Question 6 - Largest Tip from East Harlem North
-
-**Task:** For passengers picked up in "East Harlem North" in November 2025, which dropoff zone had the largest single tip?
-
-```sql
-SELECT
-    tzd."Zone" AS dropoff_zone,
-    MAX(tt.tip_amount) AS largest_tip
-FROM public.yellow_taxi_trips tt
-JOIN public.taxi_zones tzp
-    ON tzp."LocationID" = tt."PULocationID"
-JOIN public.taxi_zones tzd
-    ON tzd."LocationID" = tt."DOLocationID"
-WHERE EXTRACT(MONTH FROM tt.lpep_pickup_datetime) = 11
-  AND EXTRACT(YEAR FROM tt.lpep_pickup_datetime) = 2025
-  AND tzp."Zone" = 'East Harlem North'
-ORDER BY largest_tip DESC
-LIMIT 1;
-```
-
-**Answer:** `Yorkville West`
-
----
-
-### Question 7 - Terraform Workflow
-
-**Task:** Describe the Terraform workflow for: (1) downloading provider plugins & setup, (2) generating changes & auto-execute, (3) removing resources
-
-**Answer:**
-
-```
-terraform init → terraform apply -auto-approve → terraform destroy
-```
-
----
-
-## 🏗️ Project Description
-
-### Project Overview
-
-This data engineering project implements a production-ready pipeline with the following capabilities:
-
-- ✅ **Automated Data Ingestion**: Downloads and ingests NYC taxi data from GitHub
-- ✅ **Database Management**: Uses PostgreSQL for reliable data storage
-- ✅ **Container Orchestration**: Docker Compose manages multiple services
-- ✅ **Health Checks**: Ensures PostgreSQL is ready before processing
-- ✅ **Interactive Analysis**: JupyterLab for data exploration
-- ✅ **Web Interface**: pgAdmin for database administration
-- ✅ **Scalable Design**: Chunked data loading for memory efficiency
-
-### 🔧 Technology Stack
-
-| Layer                  | Technology     | Purpose                    |
-| ---------------------- | -------------- | -------------------------- |
-| **Orchestration**      | Docker Compose | Service coordination       |
-| **Database**           | PostgreSQL 17  | Data warehouse             |
-| **Database UI**        | pgAdmin 4      | Administration interface   |
-| **Data Processing**    | Python 3.13    | ETL logic                  |
-| **Package Management** | UV             | Fast dependency resolution |
-| **Data Analysis**      | JupyterLab     | Interactive notebooks      |
-| **ORM**                | SQLAlchemy     | Database abstraction       |
-| **Data Manipulation**  | Pandas         | CSV processing             |
-
-### 🎯 Main Components
-
-#### Service Architecture
-
-```
-┌─────────────────────────────────────┐
-│     Docker Compose Network          │
-├─────────────────────────────────────┤
-│  pgdatabase (PostgreSQL 17)        │
-│  ├── Database: ny_taxi             │
-│  └── Tables: yellow_taxi_trips,    │
-│            taxi_zones              │
-├─────────────────────────────────────┤
-│  pgadmin (Database UI)             │
-│  ├── Port: 8080                    │
-│  └── Access: localhost:8080        │
-├─────────────────────────────────────┤
-│  data_ingest (Custom Python)       │
-│  ├── Downloads taxi data           │
-│  └── Populates PostgreSQL          │
-├─────────────────────────────────────┤
-│  jupyter (JupyterLab)              │
-│  ├── Port: 8888                    │
-│  └── Data exploration              │
-└─────────────────────────────────────┘
-```
