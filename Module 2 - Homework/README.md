@@ -38,7 +38,9 @@ _Answer:_ 128.3 MiB
 2. What is the rendered value of the variable file when the inputs taxi is set to green, year is set to 2020, and month is set to 04 during execution?
 
 Solution:
-This information can be cocated in the executionas tab by location the correct execution and checking Inputs section ong the Overview tab
+This information can be located in the executions tab by locating the correct execution and checking Inputs section ong the Overview tab
+
+Executions -> Overview -> Inputs -> filename
 
 Answer:
 green_tripdata_2020-04.csv
