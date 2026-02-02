@@ -37,37 +37,61 @@ _Answer:_ 128.3 MiB
 
 2. What is the rendered value of the variable file when the inputs taxi is set to green, year is set to 2020, and month is set to 04 during execution?
 
-{{inputs.taxi}}_tripdata_{{inputs.year}}-{{inputs.month}}.csv
+Solution:
+This information can be cocated in the executionas tab by location the correct execution and checking Inputs section ong the Overview tab
+
+Answer:
 green_tripdata_2020-04.csv
-green_tripdata_04_2020.csv
-green_tripdata_2020.csv
 
 3. How many rows are there for the Yellow Taxi data for all CSV files in the year 2020?
 
-13,537.299
-24,648,499
-18,324,219
-29,430,127
+Solution:
+To get thisd information you can run the following SQL query directly on 'yellow_tripdata' table on BigQuery table
+
+```sql
+SELECT  COUNT(*) FROM `zoomcamp.yellow_tripdata`
+WHERE filename LIKE "%2020%"
+```
+
+Answer: 24,648,499
 
 4. How many rows are there for the Green Taxi data for all CSV files in the year 2020?
 
-5,327,301
-936,199
-1,734,051
-1,342,034
+Same as Question 3 but for green taxi data:
+
+```sql
+SELECT  COUNT(*) FROM `zoomcamp.green_tripdata`
+WHERE filename LIKE "%2020%"
+```
+
+Answer: 1,734,051
 
 5. How many rows are there for the Yellow Taxi data for the March 2021 CSV file?
-   1,428,092
-   706,911
-   1,925,152
-   2,561,031
+
+Here is the SQL solution:
+
+```sql
+SELECT  COUNT(*) FROM `zoomcamp.yellow_tripdata`
+WHERE filename LIKE "%2021-03%"
+```
+
+Answer: 1,925,152
 
 6. How would you configure the timezone to New York in a Schedule trigger?
 
-Add a timezone property set to EST in the Schedule trigger configuration
-Add a timezone property set to America/New_York in the Schedule trigger configuration
+According to Kestra documentation timezone is defined as UTC time zone identifier. We can add a timezone property to the trigers in Kestra Flow yaml definition:
+
+```yaml
+- id: yellow_schedule
+  type: io.kestra.plugin.core.trigger.Schedule
+  cron: "0 10 1 * *"
+  timezone: UTC-5
+  inputs:
+    taxi: yellow
+```
+
+Answer:
 Add a timezone property set to UTC-5 in the Schedule trigger configuration
-Add a location property set to New_York in the Schedule trigger configuration
 
 ## Project Overview
 
