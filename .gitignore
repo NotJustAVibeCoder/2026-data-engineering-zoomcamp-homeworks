@@ -1,3 +1,4 @@
+.env
 *.parquet  
 secrets.txt
 my-creds.json

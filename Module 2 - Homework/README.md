@@ -1,23 +1,261 @@
-# 🚕 Homework 1 - NYC Taxi Data Ingestion Pipeline
+# � Kestra Workflow Orchestration - NYC Taxi Data Pipeline
 
-**A containerized data ingestion project using Docker, PostgreSQL, and Python**
+**Build and orchestrate data workflows using Kestra with PostgreSQL**
 
-> Part of the Data Engineering Zoomcamp - Module 1 Homework
+> Part of the Data Engineering Zoomcamp - Module 2 Homework
 
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
+![Kestra](https://img.shields.io/badge/Kestra-5E4EB6?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiM1RTRFQjYiLz48L3N2Zz4=&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=flat&logo=postgresql&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
 
 ---
 
 ## Table of Contents
 
-- [Solution](#solution)
-  - [Homework Answers](#homework-answers)
-- [Project Description](#project-description)
-  - [Project Overview](#project-overview)
+- [Quick Start](#-quick-start)
+- [Project Overview](#-project-overview)
+- [Architecture](#-architecture)
+  - [Services](#services)
   - [Technology Stack](#-technology-stack)
-  - [Main Components](#-main-components)
+- [Key Features](#-key-features)
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Docker and Docker Compose installed
+- 2GB+ free disk space
+
+### Setup & Run
+
+```bash
+# Start all services
+docker compose up -d
+
+# Access Kestra UI
+open http://localhost:8080
+
+# Access pgAdmin
+open http://localhost:8083
+```
+
+### Service Endpoints
+
+| Service         | URL                     | Credentials                                   |
+| --------------- | ----------------------- | --------------------------------------------- |
+| **Kestra**      | `http://localhost:8080` | Email: `admin@kestra.io` / Pass: `Admin1234!` |
+| **pgAdmin**     | `http://localhost:8083` | Email: `admin@admin.com` / Pass: `root`       |
+| **NYC Taxi DB** | `localhost:5422`        | User: `root` / Pass: `root`                   |
+| **Kestra DB**   | `localhost:5431`        | User: `kestra` / Pass: `k3str4`               |
+
+### Connect to PostgreSQL via pgAdmin
+
+In pgAdmin, add a new server:
+
+- **Name:** `ny_taxi` (or your choice)
+- **Host:** `pgdatabase` (Docker container name)
+- **Port:** `5432` (internal container port)
+- **Username:** `root`
+- **Password:** `root`
+- **Database:** `ny_taxi`
+
+---
+
+## 🏗️ Project Overview
+
+This module introduces **Kestra**, a modern workflow orchestration platform for building and executing data pipelines. Instead of manually running Python scripts or SQL queries, Kestra allows you to:
+
+✅ **Declaratively Define Workflows** - YAML-based pipeline definitions
+✅ **Schedule & Trigger Execution** - Run workflows on schedules or events
+✅ **Monitor & Debug** - Beautiful UI for tracking execution and troubleshooting
+✅ **Parallelize Tasks** - Execute steps concurrently for efficiency
+✅ **Version Control** - Commit workflows like code
+✅ **Integrate Multiple Systems** - Connect to databases, APIs, file systems, etc.
+
+### What This Project Demonstrates
+
+- Setting up Kestra with Docker Compose
+- Creating workflows that ingest NYC taxi data into PostgreSQL
+- Orchestrating multi-step ETL pipelines
+- Monitoring and debugging workflow execution
+- Managing dependencies between tasks
+
+---
+
+## 🎯 Architecture
+
+### Services
+
+```
+┌─────────────────────────────────────────────────┐
+│        Docker Compose Network                   │
+├─────────────────────────────────────────────────┤
+│ Kestra Server (Workflow Engine)                │
+│ ├── Port: 8080 (UI)                            │
+│ ├── Executes workflows in Docker               │
+│ └── Stores execution history in PostgreSQL     │
+├─────────────────────────────────────────────────┤
+│ Kestra PostgreSQL Database                      │
+│ ├── Stores workflows, executions, configs      │
+│ ├── Host Port: 5431                            │
+│ └── Container Port: 5432                       │
+├─────────────────────────────────────────────────┤
+│ NYC Taxi PostgreSQL Database                    │
+│ ├── Data warehouse for taxi data               │
+│ ├── Host Port: 5422                            │
+│ └── Container Port: 5432                       │
+├─────────────────────────────────────────────────┤
+│ pgAdmin                                         │
+│ ├── Database management UI                     │
+│ ├── Port: 8083                                 │
+│ └── Connect to both databases                  │
+└─────────────────────────────────────────────────┘
+```
+
+### 🔧 Technology Stack
+
+| Layer                      | Technology     | Purpose                                 |
+| -------------------------- | -------------- | --------------------------------------- |
+| **Workflow Orchestration** | Kestra v1.1    | Define, schedule, and execute pipelines |
+| **Workflow Storage**       | PostgreSQL 18  | Store workflows and execution history   |
+| **Data Warehouse**         | PostgreSQL 18  | NYC taxi data storage                   |
+| **Database UI**            | pgAdmin 4      | Database management and exploration     |
+| **Containerization**       | Docker Compose | Multi-service orchestration             |
+
+---
+
+## ✨ Key Features
+
+### Workflow Orchestration
+
+Kestra replaces manual script execution with declarative, monitored workflows:
+
+```yaml
+# Example workflow structure (YAML)
+id: ingest_nyc_taxi_data
+namespace: dataeng
+
+tasks:
+  - id: download_data
+    type: http.download
+    url: https://example.com/taxi_data.csv
+
+  - id: load_to_postgres
+    type: io.kestra.plugin.sqlquery
+    sql: "INSERT INTO yellow_taxi_trips SELECT * FROM staging"
+
+  - id: verify
+    type: io.kestra.plugin.sqlquery
+    sql: "SELECT COUNT(*) FROM yellow_taxi_trips"
+```
+
+### Benefits Over Module 1
+
+| Aspect                  | Module 1 (Docker)                | Module 2 (Kestra)            |
+| ----------------------- | -------------------------------- | ---------------------------- |
+| **Workflow Definition** | Python script + manual execution | YAML-based, declarative      |
+| **Scheduling**          | Manual or cron jobs              | Built-in scheduling engine   |
+| **Monitoring**          | Logs only                        | Web UI with execution graph  |
+| **Error Handling**      | Manual try/catch                 | Automatic retry logic        |
+| **Parallelization**     | Manual threading                 | Native parallel tasks        |
+| **State Management**    | Files/environment                | Persistent state in database |
+
+---
+
+## 🎓 Learning Outcomes
+
+This module demonstrates:
+
+🎯 **Workflow Orchestration Concepts**
+
+- DAG (Directed Acyclic Graph) design patterns
+- Task dependencies and execution order
+- Conditional execution and branching
+
+🎯 **Kestra Platform**
+
+- Workflow definition and deployment
+- Task types and plugin system
+- Execution monitoring and debugging
+- Flow triggers and scheduling
+
+🎯 **Data Pipeline Best Practices**
+
+- Idempotent pipeline design
+- Error handling and retries
+- Data validation and quality checks
+- Logging and observability
+
+---
+
+## 📂 Project Files
+
+- **`docker-compose.yaml`** - Service configuration (Kestra, PostgreSQL databases, pgAdmin)
+- **`pyproject.toml`** - Python dependencies
+- **`ingest_data.py`** - Python script for data ingestion (used by Kestra tasks)
+- **`queries.sql`** - SQL queries for analysis
+- **`taxi_zone_lookup.csv`** - Reference data
+
+---
+
+## 🔌 Workflow Execution
+
+### Trigger Workflows
+
+1. **In Kestra UI** (`http://localhost:8080`):
+   - Navigate to Flows section
+   - Create new flow or import existing
+   - Click "Execute" to run
+
+2. **Via API**:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/executions \
+  -H "Content-Type: application/json" \
+  -d '{"flowId":"my_flow", "namespace":"default"}'
+```
+
+3. **Scheduled**:
+   - Define triggers in workflow YAML
+   - Kestra scheduler automatically executes
+
+### Monitor Execution
+
+- View real-time progress in UI
+- Track task execution times
+- Access logs for each step
+- Download execution results
+
+---
+
+## 🚀 Next Steps
+
+- Create custom workflows for taxi data processing
+- Integrate with external APIs
+- Add data validation and quality checks
+- Set up monitoring and alerting
+- Deploy to production environment
+
+---
+
+## 📚 Resources
+
+- [Kestra Documentation](https://kestra.io/docs/)
+- [Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- [Docker Compose Guide](https://docs.docker.com/compose/)
+
+---
+
+<div align="center">
+
+**Built with ❤️ for workflow orchestration learning**
+
+[⬆ Back to Top](#-kestra-workflow-orchestration---nyc-taxi-data-pipeline)
+
+</div>
 
 ---
 
