@@ -1,5 +1,10 @@
 .env
+logs/
+.vscode/
 *.parquet  
+*.duckdb
+*.db
+duckdb.db
 creds.json
 secrets.txt
 my-creds.json
@@ -49,3 +54,9 @@ terraform.rc
 # Optional: ignore plan files saved before destroying Terraform configuration
 # Uncomment the line below if you want to ignore planout files.
 # planout
+.bruin.yml
+logs/runs
+logs/*.log
+__pycache__/
+*.py[cod]
+logs/queries

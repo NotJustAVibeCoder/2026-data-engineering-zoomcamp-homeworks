@@ -6,24 +6,49 @@ from concurrent.futures import ThreadPoolExecutor
 from google.cloud import storage
 from google.api_core.exceptions import NotFound, Forbidden
 import time
+import pyarrow.parquet as pq
 
 # Disable SSL verification for macOS certificate issues
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
+# # Schema definition for yellow taxi data
+# SCHEMA = [
+#     {"name": "VendorID", "type": "int64"},
+#     {"name": "lpep_pickup_datetime", "type": "timestamp"},
+#     {"name": "lpep_dropoff_datetime", "type": "timestamp"},
+#     {"name": "passenger_count", "type": "double"},
+#     {"name": "trip_distance", "type": "double"},
+#     {"name": "RatecodeID", "type": "double"},
+#     {"name": "store_and_fwd_flag", "type": "string"},
+#     {"name": "PULocationID", "type": "int64"},
+#     {"name": "DOLocationID", "type": "int64"},
+#     {"name": "payment_type", "type": "double"},
+#     {"name": "fare_amount", "type": "double"},
+#     {"name": "extra", "type": "double"},
+#     {"name": "trip_type", "type": "double"},
+#     {"name": "mta_tax", "type": "double"},
+#     {"name": "tip_amount", "type": "double"},
+#     {"name": "ehail_fee", "type": "double"},
+#     {"name": "tolls_amount", "type": "double"},
+#     {"name": "improvement_surcharge", "type": "double"},
+#     {"name": "total_amount", "type": "double"},
+#     {"name": "congestion_surcharge", "type": "double"},
+# ]
+
 # Change this to your bucket name
 BUCKET_NAME = "dezoomcamp_hw4_20250101"
 
 # If you authenticated through the GCP SDK you can comment out these two lines
-CREDENTIALS_FILE = "Module 4 - Homework/creds/creds.json"
+CREDENTIALS_FILE = "creds/creds.json"
 client = storage.Client.from_service_account_json(CREDENTIALS_FILE)
 # If commented initialize client with the following
 # client = storage.Client(project='zoomcamp-mod3-datawarehouse')
 
 
-BASE_URL = "https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_"
+BASE_URL = "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_"
 YEARS = ["2019", "2020"]
-MONTHS = [f"{i:02d}" for i in range(1, 12)]
+MONTHS = [f"{i:02d}" for i in range(1, 13)]
 DOWNLOAD_DIR = "."
 
 CHUNK_SIZE = 8 * 1024 * 1024
@@ -35,7 +60,7 @@ bucket = client.bucket(BUCKET_NAME)
 
 def download_file(year, month):
     url = f"{BASE_URL}{year}-{month}.parquet"
-    file_path = os.path.join(DOWNLOAD_DIR, f"green_tripdata_{year}-{month}.parquet")
+    file_path = os.path.join(DOWNLOAD_DIR, f"yellow_tripdata_{year}-{month}.parquet")
 
     try:
         print(f"Downloading {url}...")
@@ -78,6 +103,42 @@ def create_bucket(bucket_name):
 
 def verify_gcs_upload(blob_name):
     return storage.Blob(bucket=bucket, name=blob_name).exists(client)
+
+
+# def validate_schema(file_path):
+#     """Validate parquet file schema against defined SCHEMA"""
+#     try:
+#         parquet_file = pq.read_table(file_path)
+#         parquet_schema = parquet_file.schema
+        
+#         # Check each column in our schema
+#         for schema_field in SCHEMA:
+#             col_name = schema_field["name"]
+#             expected_type = schema_field["type"]
+            
+#             if col_name not in parquet_schema.names:
+#                 print(f"Error: Column '{col_name}' not found in {file_path}")
+#                 return False
+            
+#             actual_type = str(parquet_schema.field(col_name).type)
+            
+#             # Map parquet types to our schema types for comparison
+#             type_mapping = {
+#                 "int64": ["int64"],
+#                 "double": ["double"],
+#                 "timestamp": ["timestamp"],
+#                 "string": ["string", "large_string"],
+#             }
+            
+#             expected_types = type_mapping.get(expected_type, [expected_type])
+#             if actual_type not in expected_types:
+#                 print(f"Warning: Column '{col_name}' has type '{actual_type}', expected '{expected_type}' in {file_path}")
+        
+#         print(f"Schema validation passed for {file_path}")
+#         return True
+#     except Exception as e:
+#         print(f"Schema validation failed for {file_path}: {e}")
+#         return False
 
 
 def upload_to_gcs(file_path, max_retries=3):
