@@ -1,3 +1,6 @@
 [submodule "Module 4 - Homework/dbt_ny_taxi_data"]
 	path = Module 4 - Homework/dbt_ny_taxi_data
 	url = https://github.com/NotJustAVibeCoder/dbt_zoomcamp_project.git
+[submodule "Module 5 - Homework/zoomcamp"]
+	path = Module 5 - Homework/zoomcamp
+	url = https://github.com/NotJustAVibeCoder/bruin-dataengineering-playground.git
