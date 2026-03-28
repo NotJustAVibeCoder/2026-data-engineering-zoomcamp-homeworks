@@ -1,9 +1,11 @@
+from hashlib import new
+
 from pyflink.datastream import StreamExecutionEnvironment
 from pyflink.table import EnvironmentSettings, StreamTableEnvironment
 
 
 # docker compose exec jobmanager /opt/flink/bin/flink run \
-#     -py /opt/src/job/aggregation_job.py \
+#     -py /opt/src/job/aggregation_session_job.py \
 #     --pyFiles /opt/src -d
 
 def create_events_source_kafka(t_env):
@@ -35,14 +37,14 @@ def create_events_source_kafka(t_env):
 
 
 def create_events_aggregated_sink(t_env):
-    table_name = 'processed_events_aggregated'
+    table_name = 'processed_session_events_aggregated'
     sink_ddl = f"""
         CREATE TABLE {table_name} (
             window_start TIMESTAMP(3),
+            window_end TIMESTAMP(3),
             PULocationID INT,
             num_trips BIGINT,
-            total_revenue DOUBLE,
-            PRIMARY KEY (window_start, PULocationID) NOT ENFORCED
+            PRIMARY KEY (window_start,window_end, PULocationID) NOT ENFORCED
         ) WITH (
             'connector' = 'jdbc',
             'url' = 'jdbc:postgresql://postgres:5432/postgres',
@@ -58,8 +60,7 @@ def create_events_aggregated_sink(t_env):
 
 def log_aggregation():
     env = StreamExecutionEnvironment.get_execution_environment()
-    env.enable_checkpointing(10 * 1000)
-    env.set_parallelism(3)
+    env.set_parallelism(1)
 
     settings = EnvironmentSettings.new_instance().in_streaming_mode().build()
     t_env = StreamTableEnvironment.create(env, environment_settings=settings)
@@ -69,16 +70,23 @@ def log_aggregation():
         aggregated_table = create_events_aggregated_sink(t_env)
 
         t_env.execute_sql(f"""
-        INSERT INTO {aggregated_table}
-        SELECT
-            window_start,
-            PULocationID,
-            COUNT(*) AS num_trips,
-            SUM(total_amount) AS total_revenue
-        FROM TABLE(
-            TUMBLE(TABLE {source_table}, DESCRIPTOR(event_timestamp), INTERVAL '1' HOUR)
-        )
-        GROUP BY window_start, PULocationID;
+                          
+            INSERT INTO {aggregated_table}
+            SELECT
+                SESSION_START(event_timestamp, INTERVAL '5' MINUTE) AS window_start,
+                SESSION_END(event_timestamp, INTERVAL '5' MINUTE) AS window_end,
+                PULocationID,
+                COUNT(*) AS num_trips
+            FROM TABLE(
+                SESSION(
+                    TABLE {source_table},
+                    DESCRIPTOR(event_timestamp),
+                    INTERVAL '5' MINUTE
+                )
+            )
+            GROUP BY
+                SESSION(event_timestamp, INTERVAL '5' MINUTE),
+                PULocationID;
 
         """).wait()
 

@@ -3,7 +3,7 @@ from pyflink.table import EnvironmentSettings, StreamTableEnvironment
 
 
 # docker compose exec jobmanager /opt/flink/bin/flink run \
-#     -py /opt/src/job/aggregation_job.py \
+#     -py /opt/src/job/aggregation_tumbling_job.py \
 #     --pyFiles /opt/src -d
 
 def create_events_source_kafka(t_env):
@@ -35,14 +35,13 @@ def create_events_source_kafka(t_env):
 
 
 def create_events_aggregated_sink(t_env):
-    table_name = 'processed_events_aggregated'
+    table_name = 'processed_tumbling_events_aggregated'
     sink_ddl = f"""
         CREATE TABLE {table_name} (
             window_start TIMESTAMP(3),
-            PULocationID INT,
             num_trips BIGINT,
             total_revenue DOUBLE,
-            PRIMARY KEY (window_start, PULocationID) NOT ENFORCED
+            PRIMARY KEY (window_start) NOT ENFORCED
         ) WITH (
             'connector' = 'jdbc',
             'url' = 'jdbc:postgresql://postgres:5432/postgres',
@@ -72,13 +71,12 @@ def log_aggregation():
         INSERT INTO {aggregated_table}
         SELECT
             window_start,
-            PULocationID,
             COUNT(*) AS num_trips,
-            SUM(total_amount) AS total_revenue
+            SUM(tip_amount) AS total_revenue
         FROM TABLE(
             TUMBLE(TABLE {source_table}, DESCRIPTOR(event_timestamp), INTERVAL '1' HOUR)
         )
-        GROUP BY window_start, PULocationID;
+        GROUP BY window_start;
 
         """).wait()
 

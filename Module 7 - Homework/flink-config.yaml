@@ -7,13 +7,13 @@
 
 blob:
   server:
-    port: '6124'
+    port: "6124"
 taskmanager:
   memory:
     process:
       size: 1728m
     jvm-metaspace:
-      size: 512m  # added for PyFlink
+      size: 512m # added for PyFlink
   bind-host: 0.0.0.0
   numberOfTaskSlots: 15
 jobmanager:
@@ -28,7 +28,7 @@ jobmanager:
   bind-host: 0.0.0.0
 query:
   server:
-    port: '6125'
+    port: "6125"
 parallelism:
   default: 1
 rest:
@@ -51,3 +51,9 @@ env:
         --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
         --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED
         --add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED
+
+# Use RocksDB backend to handle large state
+state.backend: rocksdb
+
+# Directory to store checkpoints (inside container)
+state.checkpoints.dir: file:///tmp/flink-checkpoints

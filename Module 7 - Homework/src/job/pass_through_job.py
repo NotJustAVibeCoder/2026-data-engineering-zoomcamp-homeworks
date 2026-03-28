@@ -1,22 +1,23 @@
 # to execute flink job run this:
 
 # docker compose exec jobmanager /opt/flink/bin/flink run \
-#     -py /opt/src/job/pass_through_job.py \
+#     -py /opt/src/job/aggregation_job.py \
 #     --pyFiles /opt/src -d
 
 def create_events_source_kafka(t_env):
     table_name = "events"
     source_ddl = f"""
         CREATE TABLE {table_name} (
+            lpep_pickup_datetime TEXT,
+            lpep_dropoff_datetime TEXT
             PULocationID INTEGER,
             DOLocationID INTEGER,
             trip_distance DOUBLE,
             total_amount DOUBLE,
-            tpep_pickup_datetime BIGINT
         ) WITH (
             'connector' = 'kafka',
             'properties.bootstrap.servers' = 'redpanda:29092',
-            'topic' = 'rides',
+            'topic' = 'green-trips',
             'scan.startup.mode' = 'latest-offset',
             'properties.auto.offset.reset' = 'latest',
             'format' = 'json'
